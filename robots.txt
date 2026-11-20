@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# 公開するURLに合わせて書きかえてください
+Sitemap: https://99pksv8hn8-netizen.github.io/pocket17/sitemap.xml

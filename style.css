@@ -1,0 +1,245 @@
+/* 16 in 1 の携帯ゲーム機。灰色プラスチックの筐体にシルク印刷のラベル、
+   へこんだ画面の中にカタログとゲームが入る。画面だけが暗い。 */
+:root{
+  color-scheme: light;
+  --shell:#cdc9bf;        /* 筐体のプラスチック */
+  --shell-hi:#e2ded3;     /* 成形のハイライト */
+  --shell-lo:#a29d93;     /* 成形の影 */
+  --ink:#312e28;          /* 筐体に印刷された文字 */
+  --ink-soft:#6c675d;
+  --screen:#1b2119;       /* 液晶の地 */
+  --red:#ad4430;          /* 印刷の赤 */
+  --blue:#2d567e;         /* 印刷の青 */
+
+  --f-shell:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
+  --f-screen:"DotGothic16", "Zen Kaku Gothic New", monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:#b4b0a6;
+  background-image:
+    linear-gradient(180deg, rgba(255,255,255,.14), rgba(0,0,0,.09)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E");
+  color:var(--ink);
+  font-family:var(--f-shell);
+  font-weight:500;
+  min-height:100%;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  padding:clamp(10px,2.5vw,30px) clamp(8px,2vw,24px) calc(26px + env(safe-area-inset-bottom,0px));
+}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- 筐体 ---------- */
+.shell{
+  max-width:1060px;margin:0 auto;position:relative;
+  background:var(--shell);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23g)' opacity='.16'/%3E%3C/svg%3E");
+  border-radius:26px 26px 30px 30px;
+  padding:clamp(13px,2.4vw,24px);
+  box-shadow:
+    inset 0 2px 0 var(--shell-hi),
+    inset 0 -3px 0 rgba(0,0,0,.14),
+    inset 3px 0 0 rgba(255,255,255,.3),
+    inset -3px 0 0 rgba(0,0,0,.08),
+    0 18px 36px -18px rgba(40,36,30,.6);
+}
+/* 筐体の成形の溝 */
+.shell::after{
+  content:"";position:absolute;left:14px;right:14px;bottom:9px;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.1) 12%,rgba(0,0,0,.1) 88%,transparent);
+  pointer-events:none;
+}
+
+/* ---------- 筐体のラベル ---------- */
+.plate{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:1px 5px 11px;flex-wrap:wrap}
+.maker{display:flex;align-items:center;gap:10px}
+.mark{
+  width:30px;height:30px;flex:0 0 auto;border-radius:7px;
+  background:var(--ink);display:grid;place-items:center;
+}
+.mark i{display:block;width:13px;height:13px;border-radius:2px;
+  background:
+    linear-gradient(var(--shell) 0 0) 0 0/6px 6px no-repeat,
+    linear-gradient(var(--red) 0 0) 7px 7px/6px 6px no-repeat;}
+.name{line-height:1}
+.name b{display:block;font-size:clamp(19px,3.6vw,25px);font-weight:900;letter-spacing:-.01em}
+.name b em{font-style:normal;color:var(--red)}
+.name span{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:4px;font-weight:500}
+.spec{text-align:right;font-size:10.5px;color:var(--ink-soft);line-height:1.7}
+.spec b{color:var(--ink);font-weight:700}
+
+/* ---------- 画面（へこみ） ---------- */
+.bezel{
+  background:#2a2f26;border-radius:12px;padding:clamp(7px,1.3vw,11px);
+  box-shadow:
+    inset 0 3px 7px rgba(0,0,0,.55),
+    0 1px 0 var(--shell-hi);
+}
+.lens{
+  background:var(--screen);border-radius:5px;overflow:hidden;position:relative;
+  box-shadow:inset 0 0 0 1px rgba(233,227,208,.09), inset 0 0 44px rgba(0,0,0,.5);
+  min-height:260px;
+}
+/* 走査線。動かない。 */
+.lens::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:40;
+  background:repeating-linear-gradient(180deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px);
+  opacity:.5;
+}
+.scr{padding:clamp(11px,2vw,17px);position:relative;z-index:2;color:#e9e3d0}
+
+/* 画面内の見出し */
+.row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.row h2{font-family:var(--f-screen);font-size:14px;font-weight:400;margin:0;color:#e9e3d0;letter-spacing:.02em}
+.row h2 u{text-decoration:none;color:#93a05c}
+.rhint{font-size:11px;color:#8a9180;font-family:var(--f-screen)}
+
+/* 検索・絞り込み */
+.find{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+.find input{
+  flex:1 1 150px;min-width:0;background:#141a13;color:#e9e3d0;
+  border:1px solid #39412f;border-radius:4px;padding:8px 10px;
+  font-family:var(--f-screen);font-size:13px;outline:none;
+}
+.find input::placeholder{color:#6d7564}
+.find input:focus{border-color:#93a05c}
+.tabs{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;cursor:pointer;font-family:var(--f-screen);font-size:12px;
+  background:#141a13;color:#9aa189;border:1px solid #39412f;border-radius:4px;padding:7px 11px;
+}
+.tab:hover{color:#e9e3d0}
+.tab[aria-pressed="true"]{background:#93a05c;color:#161b14;border-color:#93a05c}
+
+/* ---------- カタログ ---------- */
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:11px}
+.item{
+  cursor:pointer;text-align:left;padding:0;overflow:hidden;
+  background:#141a13;border:1px solid #39412f;border-radius:5px;color:#e9e3d0;
+  font-family:inherit;display:flex;flex-direction:column;
+}
+.item:hover{border-color:#6f7a58}
+.item:focus-visible{outline:2px solid #e3a73c;outline-offset:2px}
+.item .shot{position:relative;display:block;width:100%;background:#0f140e;border-bottom:1px solid #39412f}
+.item .shot canvas{display:block;width:100%;height:auto}
+.item .no{
+  position:absolute;left:0;top:0;font-family:var(--f-screen);font-size:11px;
+  background:rgba(15,20,14,.82);color:#93a05c;padding:2px 6px;border-bottom-right-radius:4px;
+}
+.item .txt{padding:8px 9px 9px}
+.item h3{margin:0 0 4px;font-size:13px;font-weight:700;letter-spacing:0}
+.item .meta{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-screen);font-size:10.5px;color:#8a9180}
+.item .meta .hi{color:#e3a73c}
+.item.vs .no{color:#e3a73c}
+.none{grid-column:1/-1;padding:38px 8px;text-align:center;color:#8a9180;font-family:var(--f-screen);font-size:13px}
+
+/* ---------- プレイ画面 ---------- */
+.gtop{display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+.quit{
+  cursor:pointer;background:#141a13;color:#e9e3d0;border:1px solid #39412f;border-radius:4px;
+  padding:7px 11px;font-family:var(--f-screen);font-size:12px;
+}
+.quit:hover{border-color:#6f7a58}
+.gname{font-family:var(--f-screen);font-size:13px;margin:0;flex:1;min-width:120px}
+.gname s{display:block;text-decoration:none;font-size:10.5px;color:#8a9180;margin-top:3px}
+.readout{display:flex;gap:7px}
+.cell2{background:#141a13;border:1px solid #39412f;border-radius:4px;padding:4px 10px;text-align:right;min-width:62px}
+.cell2 i{display:block;font-family:var(--f-screen);font-size:9px;color:#7f8770;font-style:normal}
+.cell2 b{display:block;font-family:var(--f-screen);font-size:17px;font-weight:400;color:#e3a73c;line-height:1.25}
+.cell2.b2 b{color:#93a05c}
+
+.field{display:flex;flex-direction:column;align-items:center;gap:10px;min-height:200px;justify-content:center}
+.field canvas{display:block;max-width:100%;height:auto;image-rendering:auto;border-radius:2px}
+.note{font-family:var(--f-screen);font-size:12px;color:#aeb49f;text-align:center;min-height:16px;line-height:1.6}
+.note b{color:#e3a73c;font-weight:400}
+.guide{font-size:11px;color:#79806c;text-align:center;max-width:430px;line-height:1.65}
+
+/* 画面の中のパネル（結果・ロビー） */
+.sheet{position:absolute;inset:0;display:none;place-items:center;z-index:30;background:rgba(14,18,13,.9);padding:16px}
+.sheet.on{display:grid}
+.card{
+  width:100%;max-width:330px;background:#171d15;border:1px solid #4a533d;border-radius:6px;
+  padding:19px 17px;text-align:center;
+}
+.card h4{margin:0 0 9px;font-family:var(--f-screen);font-size:15px;font-weight:400;color:#e9e3d0}
+.card .fig{font-family:var(--f-screen);font-size:38px;color:#e3a73c;line-height:1;margin:0 0 4px}
+.card p{margin:0 0 15px;font-size:12px;color:#9aa189;line-height:1.75}
+.card .rec{display:inline-block;font-family:var(--f-screen);font-size:10px;color:#161b14;background:#e3a73c;padding:3px 8px;border-radius:3px;margin-bottom:11px}
+.keys{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.key{
+  cursor:pointer;font-family:var(--f-screen);font-size:13px;padding:10px 18px;border-radius:4px;
+  border:1px solid #93a05c;background:#93a05c;color:#161b14;
+}
+.key.alt{background:transparent;color:#aeb49f;border-color:#4a533d}
+.key:hover{filter:brightness(1.08)}
+.card label{display:block;text-align:left;font-size:11px;color:#8a9180;margin:0 0 5px}
+.card input{
+  width:100%;background:#0f140e;border:1px solid #4a533d;border-radius:4px;color:#e9e3d0;
+  padding:9px 11px;font-family:var(--f-screen);font-size:15px;outline:none;margin-bottom:12px;
+  text-align:center;letter-spacing:.14em;
+}
+.card input:focus{border-color:#93a05c}
+.who{display:flex;flex-direction:column;gap:6px;margin:0 0 13px;text-align:left}
+.who div{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#aeb49f;
+  background:#0f140e;border:1px solid #39412f;border-radius:4px;padding:7px 9px}
+.who i{width:7px;height:7px;border-radius:50%;background:#93a05c;flex:0 0 auto}
+.who i.off{background:#6c675d}
+
+/* ---------- 操作部（筐体側） ---------- */
+.deck{display:none;padding:14px 5px 2px;gap:14px;align-items:center;justify-content:space-between}
+.deck.on{display:flex}
+.dpad{position:relative;width:132px;height:132px;flex:0 0 auto}
+.dpad b{
+  position:absolute;background:var(--shell);border:none;cursor:pointer;
+  box-shadow:inset 0 2px 0 var(--shell-hi), inset 0 -2px 0 var(--shell-lo), 0 2px 3px rgba(0,0,0,.2);
+  display:grid;place-items:center;
+}
+.dpad b::before{content:"";border-style:solid;opacity:.5;border-color:transparent}
+.dpad .u{left:44px;top:0;width:44px;height:48px;border-radius:7px 7px 0 0}
+.dpad .d{left:44px;bottom:0;width:44px;height:48px;border-radius:0 0 7px 7px}
+.dpad .l{top:44px;left:0;width:48px;height:44px;border-radius:7px 0 0 7px}
+.dpad .r{top:44px;right:0;width:48px;height:44px;border-radius:0 7px 7px 0}
+.dpad .u::before{border-width:0 7px 9px;border-bottom-color:var(--ink)}
+.dpad .d::before{border-width:9px 7px 0;border-top-color:var(--ink)}
+.dpad .l::before{border-width:7px 9px 7px 0;border-right-color:var(--ink)}
+.dpad .r::before{border-width:7px 0 7px 9px;border-left-color:var(--ink)}
+.dpad .c{left:44px;top:44px;width:44px;height:44px;background:var(--shell);box-shadow:none;cursor:default}
+.dpad b:active, .dpad b.hold{box-shadow:inset 0 2px 4px rgba(0,0,0,.3);background:#c2bdb3}
+.abs{display:flex;gap:13px;align-items:center}
+.ab{
+  width:66px;height:66px;border-radius:50%;cursor:pointer;border:none;
+  background:var(--red);color:#f3ece0;font-family:var(--f-shell);font-weight:700;font-size:13px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), inset 0 2px 0 rgba(255,255,255,.22), 0 3px 4px rgba(0,0,0,.22);
+  line-height:1.2;padding:0 4px;
+}
+.ab.b{background:var(--blue)}
+.ab:active, .ab.hold{box-shadow:inset 0 3px 6px rgba(0,0,0,.34);transform:translateY(2px)}
+.ab.wide{width:auto;min-width:104px;height:54px;border-radius:27px}
+.deck .legend{font-size:10px;color:var(--ink-soft);text-align:center;line-height:1.6;flex:1;min-width:84px}
+
+/* 筐体下の印刷 */
+.foot{display:flex;justify-content:space-between;gap:12px;padding:12px 6px 2px;font-size:10px;color:var(--ink-soft);flex-wrap:wrap;line-height:1.7}
+.foot a{color:var(--blue)}
+
+@media (max-width:620px){
+  .list{grid-template-columns:repeat(auto-fill,minmax(141px,1fr));gap:8px}
+  .item h3{font-size:12px}
+  .dpad{width:116px;height:116px}
+  .dpad .u,.dpad .d{left:38px;width:40px;height:42px}
+  .dpad .l,.dpad .r{top:38px;width:42px;height:40px}
+  .dpad .c{left:38px;top:38px;width:40px;height:40px}
+  .ab{width:58px;height:58px;font-size:12px}
+  .deck .legend{display:none}
+  .lens{min-height:210px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+.boot{position:absolute;inset:0;z-index:50;background:#0d110c;display:grid;place-items:center}
+.boot span{font-family:var(--f-screen);font-size:13px;color:#93a05c}
+.boot.off{display:none}
+@keyframes flick{0%{opacity:0}18%{opacity:1}26%{opacity:.25}34%{opacity:1}100%{opacity:1}}
+.lit{animation:flick .5s steps(1,end) 1}

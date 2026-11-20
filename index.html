@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ポケット17 ミニゲーム機</title>
+<meta name="description" content="ブラウザだけで遊べるミニゲーム17本。落ちものパズル、ブロックくずし、四目ならべほか。CPU戦・2人対戦・オンライン対戦つき。登録もダウンロードも不要。">
+<meta name="theme-color" content="#cdc9bf">
+<meta name="color-scheme" content="light">
+
+<!-- 公開URL。ドメインを変えたら、robots.txt と sitemap.xml の同じURLも直すこと -->
+<link rel="canonical" href="https://99pksv8hn8-netizen.github.io/pocket17/">
+<meta property="og:url" content="https://99pksv8hn8-netizen.github.io/pocket17/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ポケット17">
+<meta property="og:title" content="ポケット17 ミニゲーム機">
+<meta property="og:description" content="ブラウザだけで遊べるミニゲーム17本。CPU戦・2人対戦・オンライン対戦つき。">
+<meta property="og:image" content="https://99pksv8hn8-netizen.github.io/pocket17/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="ポケット17">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<script src="core.js" defer></script>
+<script src="net.js" defer></script>
+<script src="app.js" defer></script>
+<script src="games-a.js" defer></script>
+<script src="games-b.js" defer></script>
+<script src="games-c.js" defer></script>
+<script src="games-vs.js" defer></script>
+<script src="boot.js" defer></script>
+</head>
+<body>
+<noscript>
+  <div style="max-width:560px;margin:40px auto;padding:20px;background:#cdc9bf;border-radius:12px;font-family:system-ui,sans-serif;color:#312e28;line-height:1.8">
+    <b>JavaScriptをオンにしてください。</b><br>
+    このゲーム機はブラウザのJavaScriptで動いています。設定でオンにすると遊べます。
+  </div>
+</noscript>
+<div class="shell">
+  <div class="plate">
+    <div class="maker">
+      <div class="mark"><i></i></div>
+      <div class="name">
+        <b>ポケット<em>17</em></b>
+        <span>ミニゲーム機／17本内蔵・2人対戦対応</span>
+      </div>
+    </div>
+    <div class="spec" id="spec">
+      電源 <b>ON</b><br>
+      通信 <b id="netLamp">確認中</b>
+    </div>
+  </div>
+
+  <div class="bezel">
+    <div class="lens" id="lens">
+      <div class="boot" id="boot"><span id="bootTx">POCKET16</span></div>
+
+      <!-- カタログ -->
+      <div class="scr" id="menu">
+        <div class="row">
+          <h2>ゲームをえらぶ <u id="cnt">16本</u></h2>
+          <div class="rhint" id="playedTx"></div>
+        </div>
+        <div class="find">
+          <input id="q" type="text" placeholder="さがす" autocomplete="off" aria-label="ゲームをさがす">
+        </div>
+        <div class="tabs" id="tabs"></div>
+        <div class="list" id="list" style="margin-top:11px"></div>
+      </div>
+
+      <!-- プレイ -->
+      <div class="scr" id="game" hidden>
+        <div class="gtop">
+          <button class="quit" id="quit">◀ もどる</button>
+          <h3 class="gname" id="gname">—<s id="gsub"></s></h3>
+          <div class="readout">
+            <div class="cell2"><i>SCORE</i><b class="tnum" id="sc">0</b></div>
+            <div class="cell2 b2"><i>BEST</i><b class="tnum" id="bs">0</b></div>
+          </div>
+        </div>
+        <div class="field" id="field"></div>
+        <div class="note" id="note"></div>
+        <div class="guide" id="guide"></div>
+      </div>
+
+      <div class="sheet" id="sheet"><div class="card" id="card"></div></div>
+    </div>
+  </div>
+
+  <div class="deck" id="deck"></div>
+
+  <div class="foot">
+    <span>操作は十字キーとボタン、キーボードの矢印キー・スペースにも対応。</span>
+    <span>スコアはこの端末に記録されます。</span>
+  </div>
+</div>
+</body>
+</html>
