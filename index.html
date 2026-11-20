@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ポケット17 ミニゲーム機</title>
-<meta name="description" content="ブラウザだけで遊べるミニゲーム17本。落ちものパズル、ブロックくずし、四目ならべほか。CPU戦・2人対戦・オンライン対戦つき。登録もダウンロードも不要。">
+<meta name="description" content="ブラウザだけで遊べるミニゲーム集。落ちものパズル、ブロックくずし、四目ならべ、育成放置ゲームほか。CPU戦・2人対戦・オンライン対戦とランキングつき。登録もダウンロードも不要。">
 <meta name="theme-color" content="#cdc9bf">
 <meta name="color-scheme" content="light">
 
@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ポケット17">
 <meta property="og:title" content="ポケット17 ミニゲーム機">
-<meta property="og:description" content="ブラウザだけで遊べるミニゲーム17本。CPU戦・2人対戦・オンライン対戦つき。">
+<meta property="og:description" content="ブラウザだけで遊べるミニゲーム集。CPU戦・2人対戦・オンライン対戦とランキングつき。">
 <meta property="og:image" content="https://99pksv8hn8-netizen.github.io/pocket17/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -33,12 +33,17 @@
 <link rel="stylesheet" href="style.css">
 
 <script src="core.js" defer></script>
+<script src="rank.js" defer></script>
 <script src="net.js" defer></script>
 <script src="app.js" defer></script>
 <script src="games-a.js" defer></script>
 <script src="games-b.js" defer></script>
 <script src="games-c.js" defer></script>
+<script src="games-d.js" defer></script>
+<script src="games-e.js" defer></script>
 <script src="games-vs.js" defer></script>
+<script src="games-f.js" defer></script>
+<script src="games-g.js" defer></script>
 <script src="boot.js" defer></script>
 </head>
 <body>
@@ -54,12 +59,14 @@
       <div class="mark"><i></i></div>
       <div class="name">
         <b>ポケット<em>17</em></b>
-        <span>ミニゲーム機／17本内蔵・2人対戦対応</span>
+        <span>ミニゲーム機／CPU戦・2人対戦・オンライン対戦</span>
       </div>
     </div>
     <div class="spec" id="spec">
-      電源 <b>ON</b><br>
-      通信 <b id="netLamp">確認中</b>
+      <button class="plate-name" id="nameBtn">
+        <span id="pname">ゲスト</span><i id="ptier">ブロンズ Lv.1</i>
+      </button>
+      <span class="plate-net">通信 <b id="netLamp">確認中</b></span>
     </div>
   </div>
 
@@ -93,6 +100,15 @@
         <div class="field" id="field"></div>
         <div class="note" id="note"></div>
         <div class="guide" id="guide"></div>
+      </div>
+
+      <!-- ランキング -->
+      <div class="scr" id="ranking" hidden>
+        <div class="gtop">
+          <button class="quit" id="rbk">◀ もどる</button>
+          <h3 class="gname">ランキング<s id="rme"></s></h3>
+        </div>
+        <div id="rkbody"></div>
       </div>
 
       <div class="sheet" id="sheet"><div class="card" id="card"></div></div>

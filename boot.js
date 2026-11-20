@@ -4,6 +4,7 @@
 /* ===== 電源を入れる ===== */
 tabs();
 draw();
+paintName();
 
 (async ()=>{
   const k=await Net.probe();
@@ -24,7 +25,7 @@ function powerOn(saved){
   if(reduce){ b.classList.add("off"); return; }
   const tx=el("bootTx");
   tx.textContent="POCKET 17";
-  setTimeout(()=>{ tx.textContent="17 GAMES IN 1"; },320);
+  setTimeout(()=>{ tx.textContent="READY"; },320);
   setTimeout(()=>{
     b.classList.add("off");
     el("lens").classList.add("lit");

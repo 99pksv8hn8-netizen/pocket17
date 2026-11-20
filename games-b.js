@@ -354,7 +354,7 @@ GAMES.push({
    10 リアクション
    ============================================================ */
 GAMES.push({
-  id:"react", title:"リアクション", cat:"反射",
+  id:"react", title:"リアクション", cat:"反射", lower:true,
   ctrl:"緑になった瞬間に押す",
   about:"5回の平均反応速度をミリ秒で計測",
   kw:"reaction reflex ms",

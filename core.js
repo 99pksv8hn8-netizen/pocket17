@@ -1,9 +1,5 @@
 /* ポケット17 — 共通部品（パレット・入力・描画・音・演出） */
 "use strict";
-/* ============================================================
-   ポケット16 — 本体側のしくみ
-   ============================================================ */
-
 /* ハードウェアパレット。全ゲームこの8色だけで描く。 */
 const PAL = {
   screen:"#1b2119", dim:"#36402f", dim2:"#22291f",
@@ -27,11 +23,14 @@ const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"
 /* ---------- 入力 ---------- */
 const Input = (()=>{
   const down=new Set(), hits=new Set(), raw=new Set();
-  const ALIAS={a:"ArrowLeft",d:"ArrowRight",w:"ArrowUp",s:"ArrowDown"," ":"Space",Enter:"Space",z:"Space",x:"KeyX"};
+  /* WASD を矢印として扱う。ふたりで1台を使うゲームでは邪魔になるので切れる。 */
+  const ALIAS={a:"ArrowLeft",d:"ArrowRight",w:"ArrowUp",s:"ArrowDown"," ":"Space",Enter:"Space",z:"Space"};
+  const ALWAYS={" ":"Space",Enter:"Space"};
+  let useAlias=true;
   const norm = e => {
     if(e.key===" ") return "Space";
     const k = e.key.length===1 ? e.key.toLowerCase() : e.key;
-    return ALIAS[k] || e.key;
+    return (useAlias ? ALIAS[k] : ALWAYS[k]) || e.key;
   };
   window.addEventListener("keydown", e=>{
     const k=norm(e);
@@ -51,7 +50,8 @@ const Input = (()=>{
     hit(k){ if(hits.has(k)){ hits.delete(k); return true; } return false; },
     vdown(k){ if(!down.has(k)) hits.add(k); down.add(k); },
     vup(k){ down.delete(k); },
-    clear(){ down.clear(); hits.clear(); raw.clear(); }
+    alias(on){ useAlias=!!on; down.clear(); hits.clear(); raw.clear(); },
+    clear(){ down.clear(); hits.clear(); raw.clear(); useAlias=true; }
   };
 })();
 
@@ -87,6 +87,20 @@ function sprite(ctx, x, y, s, rows, map){
       if(c) px(ctx, x+rx*s, y+ry*s, s, s, c);
     }
   });
+}
+
+/* 大きな数を読める形にする。1万をこえたら 万・億・兆・京 で表す。 */
+function big(n){
+  n = Math.floor(Number(n)||0);
+  if(n < 10000) return n.toLocaleString();
+  const U=[[1e16,"京"],[1e12,"兆"],[1e8,"億"],[1e4,"万"]];
+  for(const [v,s] of U){
+    if(n >= v){
+      const x = n/v;
+      return (x>=100 ? x.toFixed(0) : x.toFixed(2).replace(/\.?0+$/,"")) + s;
+    }
+  }
+  return n.toLocaleString();
 }
 
 /* ---------- 音 ---------- */

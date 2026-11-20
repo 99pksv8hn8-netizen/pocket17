@@ -2,13 +2,13 @@
  * つながっているときは必ず新しいファイルを取りにいき、
  * 取れなかったときだけ保存しておいたものを使う。
  * ファイルを更新したら下の v1 の数字を上げること。 */
-const CACHE = "pocket17-v1";
+const CACHE = "pocket17-v5";
 const FILES = [
   "./", "index.html", "404.html", "manifest.webmanifest",
   "style.css",
-  "core.js", "net.js", "app.js",
-  "games-a.js", "games-b.js", "games-c.js",
-  "games-vs.js", "boot.js",
+  "core.js", "rank.js", "net.js", "app.js",
+  "games-a.js", "games-b.js", "games-c.js", "games-d.js", "games-e.js",
+  "games-vs.js", "games-f.js", "games-g.js", "boot.js",
   "favicon.svg", "favicon-32.png", "apple-touch-icon.png",
   "icon-192.png", "icon-512.png"
 ];
