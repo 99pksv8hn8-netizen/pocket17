@@ -95,6 +95,13 @@ body{
 .row h2{font-family:var(--f-screen);font-size:14px;font-weight:400;margin:0;color:#e9e3d0;letter-spacing:.02em}
 .row h2 u{text-decoration:none;color:#93a05c}
 .rhint{font-size:11px;color:#8a9180;font-family:var(--f-screen)}
+.rankbtn{
+  margin-left:auto;font-family:var(--f-screen);font-size:11px;cursor:pointer;
+  background:#1b2119;color:#e3a73c;border:1px solid #4a5340;border-radius:4px;
+  padding:4px 9px;letter-spacing:.02em;
+}
+.rankbtn:hover{border-color:#e3a73c}
+.rankbtn:focus-visible{outline:2px solid #e3a73c;outline-offset:2px}
 
 /* 検索・絞り込み */
 .find{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
@@ -151,7 +158,7 @@ body{
 .cell2 b{display:block;font-family:var(--f-screen);font-size:17px;font-weight:400;color:#e3a73c;line-height:1.25}
 .cell2.b2 b{color:#93a05c}
 
-.field{display:flex;flex-direction:column;align-items:center;gap:10px;min-height:200px;justify-content:center}
+.field{--tint:#93a05c;position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:200px;justify-content:center}
 .field canvas{display:block;max-width:100%;height:auto;image-rendering:auto;border-radius:2px}
 .note{font-family:var(--f-screen);font-size:12px;color:#aeb49f;text-align:center;min-height:16px;line-height:1.6}
 .note b{color:#e3a73c;font-weight:400}
@@ -243,3 +250,33 @@ body{
 .boot.off{display:none}
 @keyframes flick{0%{opacity:0}18%{opacity:1}26%{opacity:.25}34%{opacity:1}100%{opacity:1}}
 .lit{animation:flick .5s steps(1,end) 1}
+
+/* 盤面にかける仕上げ。四隅を落として中心に目を集め、
+   ゲームごとの色をうっすら乗せる。ゲーム側のコードには触らない。 */
+.field::after{
+  content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:3px;
+  background:
+    radial-gradient(130% 100% at 50% 38%, transparent 52%, rgba(0,0,0,.40) 100%),
+    radial-gradient(120% 90% at 50% 20%, color-mix(in srgb, var(--tint) 13%, transparent) 0%, transparent 62%);
+}
+@supports not (color: color-mix(in srgb, red 50%, blue)){
+  .field::after{ background:radial-gradient(130% 100% at 50% 38%, transparent 52%, rgba(0,0,0,.40) 100%); }
+}
+
+/* ゲームを始めたときに一瞬だけ出すタイトルカード */
+.tcard{
+  position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:9px;
+  background:#0f140e;border-radius:3px;cursor:pointer;
+  animation:tcIn .16s ease-out;
+}
+.tcard.out{opacity:0;transition:opacity .19s ease-in;pointer-events:none}
+.tcard canvas{width:min(100%,420px);height:auto;border-radius:3px;
+  box-shadow:0 6px 20px rgba(0,0,0,.55)}
+.tcard b{font-size:14px;font-weight:700;letter-spacing:.04em;color:#e9e3d0}
+.tcard i{font-family:var(--f-screen);font-size:10.5px;color:#79806c;font-style:normal}
+@keyframes tcIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .tcard{animation:none}
+  .tcard.out{transition:none}
+}

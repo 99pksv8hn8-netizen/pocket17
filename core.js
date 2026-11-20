@@ -79,12 +79,98 @@ function txt(ctx,s,x,y,size,col,align){
   ctx.fillText(s,x,y);
 }
 /* ドット絵を1マス単位で置くための補助 */
-function px(ctx,x,y,w,h,col){ ctx.fillStyle=col; ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); }
+/* ---------- 色の加工 ----------
+   明るい面と暗い面を作るのに使う。結果は覚えておく。
+   毎フレーム何百回も呼ばれるので、色の読み直しは一度きりにする。 */
+const TONE=(()=>{
+  const memo=new Map();
+  function parse(c){
+    if(typeof c!=="string") return null;
+    if(c.charAt(0)==="#"){
+      let h=c.slice(1);
+      if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+      if(h.length!==6) return null;
+      const n=parseInt(h,16);
+      if(isNaN(n)) return null;
+      return [(n>>16)&255,(n>>8)&255,n&255,1];
+    }
+    const m=c.match(/-?\d*\.?\d+/g);
+    if(!m||m.length<3) return null;
+    return [+m[0],+m[1],+m[2], m.length>3?+m[3]:1];
+  }
+  function out(p){
+    const a=p[3];
+    const f=v=>Math.max(0,Math.min(255,Math.round(v)));
+    return a>=1 ? "rgb("+f(p[0])+","+f(p[1])+","+f(p[2])+")"
+                : "rgba("+f(p[0])+","+f(p[1])+","+f(p[2])+","+a+")";
+  }
+  /* t>0 で白に、t<0 で黒に寄せる */
+  function shift(col,t){
+    const key=col+"|"+t;
+    let v=memo.get(key);
+    if(v!==undefined) return v;
+    const p=parse(col);
+    v = p ? out(t>=0 ? [p[0]+(255-p[0])*t, p[1]+(255-p[1])*t, p[2]+(255-p[2])*t, p[3]]
+                     : [p[0]*(1+t), p[1]*(1+t), p[2]*(1+t), p[3]])
+          : col;               /* 読めない色はそのまま返す。描画は止めない。 */
+    if(memo.size>900) memo.clear();
+    memo.set(key,v);
+    return v;
+  }
+  /* 色そのものに倍率をかける。暗い色は変化が小さく、明るい色ははっきり変わる。
+     面取りに使うのはこちら。白に寄せる方式だと、暗い背景に明るい線が浮いてしまう。 */
+  function scale(col,k){
+    const key=col+"x"+k;
+    let v=memo.get(key);
+    if(v!==undefined) return v;
+    const p=parse(col);
+    v = p ? out([p[0]*k, p[1]*k, p[2]*k, p[3]]) : col;
+    if(memo.size>900) memo.clear();
+    memo.set(key,v);
+    return v;
+  }
+  return {
+    parse, shift, scale,
+    light:(c,t)=>shift(c,t===undefined?0.3:t),
+    dark:(c,t)=>shift(c,-(t===undefined?0.3:t)),
+    mix(a,b,t){
+      const A=parse(a), B=parse(b);
+      if(!A||!B) return a;
+      return out([A[0]+(B[0]-A[0])*t, A[1]+(B[1]-A[1])*t, A[2]+(B[2]-A[2])*t, A[3]]);
+    }
+  };
+})();
+
+/* 面取りの強さ。0 にすると昔のべた塗りに戻る。 */
+let BEVEL = 1;
+function setBevel(v){ BEVEL = v; }
+
+/* 塗りつぶし。面取りはしない。ドット絵の一粒ずつなど、平らにしたいとき用。 */
+function pxFlat(ctx,x,y,w,h,col){
+  ctx.fillStyle=col;
+  ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
+}
+
+/* ふつうの塗りつぶし。ある程度の大きさがあるときだけ上下に面を付けて厚みを出す。
+   細い線や小さな点は今までどおり平らに塗る。 */
+function px(ctx,x,y,w,h,col){
+  x=Math.round(x); y=Math.round(y); w=Math.round(w); h=Math.round(h);
+  ctx.fillStyle=col; ctx.fillRect(x,y,w,h);
+  if(!BEVEL || w<6 || h<6) return;
+  const t=Math.max(1,Math.min(3,Math.round(Math.min(w,h)/10)));
+  ctx.fillStyle=TONE.scale(col, 1+0.34*BEVEL);
+  ctx.fillRect(x,y,w,t);
+  ctx.fillStyle=TONE.scale(col, 1-0.30*BEVEL);
+  ctx.fillRect(x,y+h-t,w,t);
+  ctx.fillStyle=TONE.scale(col, 1-0.14*BEVEL);
+  ctx.fillRect(x+w-t,y+t,t,h-t*2);
+}
 function sprite(ctx, x, y, s, rows, map){
+  /* ドット絵は一粒ずつが絵の一部なので、粒に影を付けず平らに描く。 */
   rows.forEach((row,ry)=>{
     for(let rx=0;rx<row.length;rx++){
       const c=map[row[rx]];
-      if(c) px(ctx, x+rx*s, y+ry*s, s, s, c);
+      if(c) pxFlat(ctx, x+rx*s, y+ry*s, s, s, c);
     }
   });
 }

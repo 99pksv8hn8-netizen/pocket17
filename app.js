@@ -204,10 +204,11 @@ function start(g){
   el("gname").innerHTML=esc(g.title)+'<s>'+esc(g.ctrl||"")+'</s>';
   el("guide").textContent=g.hint||"";
   el("menu").hidden=true; el("ranking").hidden=true; el("game").hidden=false;
+  el("field").style.setProperty("--tint", tintOf(g));
   const played=store.get("played",{});
   played[g.id]=(played[g.id]||0)+1; store.set("played",played);
   live={loops:[],timers:[],listeners:[],cleanup:null,mainCanvas:null};
-  try{ live.cleanup=g.start(Api)||null; }
+  try{ live.cleanup=g.start(Api)||null; titleCard(g); }
   catch(err){ el("field").innerHTML='<div style="color:'+PAL.red+';font-size:12px;padding:24px">読み込みに失敗しました: '+esc(err.message)+'</div>'; }
 }
 
@@ -304,6 +305,56 @@ function drawRanking(){
 el("rbk").onclick=toMenu;
 el("toRank").onclick=toRanking;
 
+/* ---------- 盤面の色味 ---------- */
+/* ゲームごとに色を一つ持たせて、画面のふちにうっすら乗せる。
+   23本が全部おなじ暗い緑に見えてしまうのを避けるため。
+   ゲーム側のコードには一切手を入れない。 */
+const TINT_BY_CAT={
+  "パズル":PAL.teal, "アクション":PAL.amber, "反射":PAL.red,
+  "対戦":PAL.blue,   "育成":PAL.olive,     "レース":PAL.plum, "冒険":PAL.amber
+};
+const TINT_BY_ID={
+  blockdrop:PAL.plum, snake:PAL.olive,  breakout:PAL.blue, merge:PAL.amber,
+  mines:PAL.olive,    flap:PAL.amber,   runner:PAL.red,    mole:PAL.teal,
+  memory:PAL.plum,    react:PAL.amber,  aim:PAL.teal,      slide:PAL.teal,
+  catch:PAL.red,      shooter:PAL.plum, pong:PAL.blue,     ttt:PAL.amber,
+  four:PAL.blue,      ranch:PAL.amber,  highway:PAL.plum,  abyss:PAL.amber,
+  duel:PAL.red,       fort:PAL.teal,    kasane:PAL.teal
+};
+function tintOf(g){ return TINT_BY_ID[g.id] || TINT_BY_CAT[g.cat] || PAL.olive; }
+
+/* ---------- ボックスアート ---------- */
+/* art.js があればそれを描く。無ければ従来の簡易サムネイルに落とす。
+   どちらも無ければ下地だけ塗って終わり、エラーにはしない。 */
+function paintArt(g,c){
+  c.fillStyle=PAL.screen; c.fillRect(0,0,160,112);
+  if(typeof ART!=="undefined" && ART.draw(g.id,c,160,112)) return true;
+  if(g.thumb){ try{ g.thumb(c,160,112); return true; }catch(e){} }
+  return false;
+}
+
+/* ゲームを始めた直後に一瞬だけ出す。触れば飛ばせる。 */
+function titleCard(g){
+  if(!live) return;
+  const wrap=document.createElement("div");
+  wrap.className="tcard";
+  const o=makeCanvas(160,112,420);
+  wrap.appendChild(o.canvas);
+  paintArt(g,o.ctx);
+  const nm=document.createElement("b"); nm.textContent=g.title; wrap.appendChild(nm);
+  const sub=document.createElement("i"); sub.textContent=g.cat; wrap.appendChild(sub);
+  el("field").appendChild(wrap);
+  let gone=false;
+  const close=()=>{
+    if(gone) return; gone=true;
+    wrap.classList.add("out");
+    setTimeout(()=>{ if(wrap.parentNode) wrap.parentNode.removeChild(wrap); },220);
+  };
+  wrap.addEventListener("pointerdown",close);
+  const t=setTimeout(close,620);
+  live.timers.push(()=>{ clearTimeout(t); if(wrap.parentNode) wrap.parentNode.removeChild(wrap); });
+}
+
 /* ---------- カタログ ---------- */
 let tab="ぜんぶ", q="";
 function tabs(){
@@ -334,15 +385,14 @@ function draw(){
       (b?'<span class="hi tnum">'+fmt(g,b)+'</span>':'<span>—</span>')+
       '</span></span></button>';
   }).join("");
-  /* サムネイルはゲーム自身に描かせる */
+  /* サムネイルは art.js のボックスアート。無い分はゲーム自身の簡易図に落とす */
   el("list").querySelectorAll("[data-shot]").forEach(host=>{
     const g=GAMES.find(x=>x.id===host.dataset.shot);
-    if(!g || !g.thumb) return;
+    if(!g) return;
     const o=makeCanvas(160,112,320);
     o.canvas.style.maxWidth="100%";
     host.appendChild(o.canvas);
-    o.ctx.fillStyle=PAL.screen; o.ctx.fillRect(0,0,160,112);
-    try{ g.thumb(o.ctx,160,112); }catch(e){}
+    paintArt(g,o.ctx);
   });
   el("list").querySelectorAll(".item").forEach(b=>{
     b.onclick=()=>{ const g=GAMES.find(x=>x.id===b.dataset.id); if(g) start(g); };
